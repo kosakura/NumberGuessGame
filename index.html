@@ -26,7 +26,7 @@
       width: 60%;
       max-width: 200px;
       text-align: center;
-      margin-bottom: 15px; /* ボタンとの間隔 */
+      margin-bottom: 15px;
     }
     button {
       padding: 15px 25px;
@@ -38,7 +38,7 @@
       background-color: #ff758c;
       color: white;
       transition: 0.3s;
-      display: block; /* 縦配置＋中央揃え */
+      display: block;
     }
     button:hover {
       background-color: #ff4d6d;
@@ -55,8 +55,8 @@
   <p>1から100のすうじをあててね！</p>
   <input type="number" id="inputNumber" placeholder="すうじをいれてね">
   <div>
-    <button onclick="guess()">ていしゅつ</button>
-    <button onclick="restart()">リスタート</button>
+    <button id="submitBtn" onclick="guess()">ていしゅつ</button>
+    <button onclick="restart()">はじめから</button>
   </div>
   <p id="result"></p>
   <p id="bestRecord"></p>
@@ -64,6 +64,7 @@
   <script>
     let targetNumber = Math.floor(Math.random() * 100) + 1;
     let attempts = 0;
+    let lastInput = null; // 直前の数字を保持
 
     // localStorageからさいこうのきろくを取得
     let best = localStorage.getItem("best") || Infinity;
@@ -72,9 +73,10 @@
     function guess() {
       const inputEl = document.getElementById("inputNumber");
       const inputText = inputEl.value.trim();
+      const submitBtn = document.getElementById("submitBtn");
 
-      // 「りんたろう」の裏技
-      if(inputText === "りんたろう") {
+      // 裏技キーワード「00」
+      if(inputText === "00") {
         const digits = String(targetNumber).split("");
         const randomDigit = digits[Math.floor(Math.random() * digits.length)];
         document.getElementById("result").innerText = `ヒント：せいかいのすうじにふくまれるのは ${randomDigit} だよ！`;
@@ -91,26 +93,38 @@
       attempts++;
 
       if (input < targetNumber) {
-        document.getElementById("result").innerText = "もっとおおきい";
+        const ref = lastInput !== null ? lastInput : input;
+        document.getElementById("result").innerText = `${ref}よりおおきい`;
       } else if (input > targetNumber) {
-        document.getElementById("result").innerText = "もっとちいさい";
+        const ref = lastInput !== null ? lastInput : input;
+        document.getElementById("result").innerText = `${ref}よりちいさい`;
       } else {
         document.getElementById("result").innerText = `せいかい！🎉 ${attempts}かいであてたよ`;
-        // さいこうのきろく更新
+        // 正解したら入力欄とボタンを無効化
+        inputEl.disabled = true;
+        submitBtn.disabled = true;
+
         if (attempts < best) {
           best = attempts;
           localStorage.setItem("best", best);
           document.getElementById("bestRecord").innerText = `さいこうのきろく：${best}かい`;
         }
       }
+
+      lastInput = input;
       inputEl.value = "";
     }
 
     function restart() {
       targetNumber = Math.floor(Math.random() * 100) + 1;
       attempts = 0;
+      lastInput = null;
       document.getElementById("result").innerText = "";
-      document.getElementById("inputNumber").value = "";
+      const inputEl = document.getElementById("inputNumber");
+      const submitBtn = document.getElementById("submitBtn");
+      inputEl.value = "";
+      inputEl.disabled = false;
+      submitBtn.disabled = false;
     }
   </script>
 </body>
