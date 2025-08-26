@@ -1,84 +1,117 @@
 <!DOCTYPE html>
 <html lang="ja">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>すうじあてゲーム</title>
-<style>
-  body {
-    font-family: sans-serif;
-    padding: 50px 10px;
-    text-align: center;
-    background: #f2f2f2;
-  }
-  h1 {
-    color: #3333cc;
-  }
-  input[type=number] {
-    padding: 15px;
-    font-size: 1.5em;
-    width: 200px;
-  }
-  button {
-    padding: 15px 25px;
-    font-size: 1.2em;
-    background-color: #66cc66;
-    color: white;
-    border: none;
-    border-radius: 8px;
-    cursor: pointer;
-  }
-  button:hover {
-    background-color: #55aa55;
-  }
-  #message, #ranking {
-    margin-top: 20px;
-    font-size: 1.2em;
-  }
-</style>
+  <meta charset="UTF-8">
+  <title>すうじあてゲーム</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to right, #a8edea, #fed6e3);
+      text-align: center;
+      padding-top: 50px;
+    }
+    h1 {
+      color: #333;
+      font-size: 2em;
+    }
+    p {
+      font-size: 1.2em;
+    }
+    input[type=number] {
+      padding: 15px;
+      font-size: 1.5em;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 60%;
+      max-width: 200px;
+      text-align: center;
+      margin-bottom: 15px; /* ボタンとの間隔 */
+    }
+    button {
+      padding: 15px 25px;
+      font-size: 1.2em;
+      border: none;
+      border-radius: 5px;
+      margin: 5px auto;
+      cursor: pointer;
+      background-color: #ff758c;
+      color: white;
+      transition: 0.3s;
+      display: block; /* 縦配置＋中央揃え */
+    }
+    button:hover {
+      background-color: #ff4d6d;
+    }
+    #result, #bestRecord {
+      margin-top: 20px;
+      font-size: 1.5em;
+      color: #333;
+    }
+  </style>
 </head>
 <body>
-<h1>すうじあてゲーム</h1>
-<p>すうじをいれてね（1～100）</p>
-<input type="number" id="guess" min="1" max="100">
-<button id="submitBtn">おす</button>
+  <h1>すうじあてゲーム</h1>
+  <p>1から100のすうじをあててね！</p>
+  <input type="number" id="inputNumber" placeholder="すうじをいれてね">
+  <div>
+    <button onclick="guess()">ていしゅつ</button>
+    <button onclick="restart()">リスタート</button>
+  </div>
+  <p id="result"></p>
+  <p id="bestRecord"></p>
 
-<p id="message"></p>
-<p id="ranking"></p>
+  <script>
+    let targetNumber = Math.floor(Math.random() * 100) + 1;
+    let attempts = 0;
 
-<script>
-let answer = Math.floor(Math.random() * 100) + 1;
-let attempts = 0;
+    // localStorageからさいこうのきろくを取得
+    let best = localStorage.getItem("best") || Infinity;
+    document.getElementById("bestRecord").innerText = best === Infinity ? "さいこうのきろく：なし" : `さいこうのきろく：${best}かい`;
 
-// さいこうのきろくをlocalStorageから取得
-let best = localStorage.getItem("best") || Infinity;
-document.getElementById("ranking").innerText = best === Infinity ? "さいこうのきろく：なし" : `さいこうのきろく：${best}かい`;
+    function guess() {
+      const inputEl = document.getElementById("inputNumber");
+      const inputText = inputEl.value.trim();
 
-document.getElementById("submitBtn").addEventListener("click", function() {
-  let guess = Number(document.getElementById("guess").value);
-  if (!guess || guess < 1 || guess > 100) {
-    document.getElementById("message").innerText = "1から100までのすうじをいれてね";
-    return;
-  }
+      // 「りんたろう」の裏技
+      if(inputText === "りんたろう") {
+        const digits = String(targetNumber).split("");
+        const randomDigit = digits[Math.floor(Math.random() * digits.length)];
+        document.getElementById("result").innerText = `ヒント：せいかいのすうじにふくまれるのは ${randomDigit} だよ！`;
+        inputEl.value = "";
+        return;
+      }
 
-  attempts++;
-  if (guess === answer) {
-    document.getElementById("message").innerText = `せいかい！${attempts}かいであてたよ`;
-    if (attempts < best) {
-      best = attempts;
-      localStorage.setItem("best", best);
-      document.getElementById("ranking").innerText = `さいこうのきろく：${best}かい`;
+      const input = parseInt(inputText);
+      if (isNaN(input)) {
+        document.getElementById("result").innerText = "すうじをいれてね";
+        return;
+      }
+
+      attempts++;
+
+      if (input < targetNumber) {
+        document.getElementById("result").innerText = "もっとおおきい";
+      } else if (input > targetNumber) {
+        document.getElementById("result").innerText = "もっとちいさい";
+      } else {
+        document.getElementById("result").innerText = `せいかい！🎉 ${attempts}かいであてたよ`;
+        // さいこうのきろく更新
+        if (attempts < best) {
+          best = attempts;
+          localStorage.setItem("best", best);
+          document.getElementById("bestRecord").innerText = `さいこうのきろく：${best}かい`;
+        }
+      }
+      inputEl.value = "";
     }
-    // ゲームをリスタート
-    answer = Math.floor(Math.random() * 100) + 1;
-    attempts = 0;
-    document.getElementById("guess").value = '';
-  } else if (guess < answer) {
-    document.getElementById("message").innerText = "もっとおおきい";
-  } else {
-    document.getElementById("message").innerText = "もっとちいさい";
-  }
-});
-</script>
+
+    function restart() {
+      targetNumber = Math.floor(Math.random() * 100) + 1;
+      attempts = 0;
+      document.getElementById("result").innerText = "";
+      document.getElementById("inputNumber").value = "";
+    }
+  </script>
 </body>
 </html>
