@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>すうじあてゲーム</title>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background: linear-gradient(to right, #a8edea, #fed6e3);
+      text-align: center;
+      padding-top: 50px;
+    }
+
+    h1 {
+      color: #333;
+      font-size: 2em;
+    }
+
+    p {
+      font-size: 1.2em;
+    }
+
+    input[type=number] {
+      padding: 10px;
+      font-size: 1em;
+      border-radius: 5px;
+      border: 1px solid #ccc;
+      width: 150px;
+      text-align: center;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 1em;
+      border: none;
+      border-radius: 5px;
+      margin: 5px;
+      cursor: pointer;
+      background-color: #ff758c;
+      color: white;
+      transition: 0.3s;
+    }
+
+    button:hover {
+      background-color: #ff4d6d;
+    }
+
+    #result {
+      margin-top: 20px;
+      font-size: 1.5em;
+      color: #333;
+    }
+  </style>
+</head>
+<body>
+  <h1>すうじあてゲーム</h1>
+  <p>1から100のすうじをあててね！</p>
+  <input type="number" id="inputNumber" placeholder="すうじをいれてね">
+  <div>
+    <button onclick="guess()">ていしゅつ</button>
+    <button onclick="restart()">リスタート</button>
+  </div>
+  <p id="result"></p>
+
+  <script>
+    let targetNumber = Math.floor(Math.random() * 100) + 1;
+    let attempts = 0; // 回数カウント
+
+    function guess() {
+      const input = parseInt(document.getElementById("inputNumber").value);
+      if (isNaN(input)) {
+        document.getElementById("result").innerText = "すうじをいれてね";
+        return;
+      }
+
+      attempts++; // 回数をカウント
+
+      if (input < targetNumber) {
+        document.getElementById("result").innerText = "もっとおおきい";
+      } else if (input > targetNumber) {
+        document.getElementById("result").innerText = "もっとちいさい";
+      } else {
+        document.getElementById("result").innerText = `せいかい！🎉 ${attempts}かいであてたよ`;
+      }
+
+      document.getElementById("inputNumber").value = "";
+    }
+
+    function restart() {
+      targetNumber = Math.floor(Math.random() * 100) + 1;
+      attempts = 0;
+      document.getElementById("result").innerText = "";
+      document.getElementById("inputNumber").value = "";
+    }
+  </script>
+</body>
+</html>
