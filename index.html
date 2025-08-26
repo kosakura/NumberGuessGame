@@ -75,8 +75,8 @@
       const inputText = inputEl.value.trim();
       const submitBtn = document.getElementById("submitBtn");
 
-      // 裏技キーワード「00」
-      if(inputText === "00") {
+      // 裏技キーワード「0」
+      if(inputText === "0") {
         const digits = String(targetNumber).split("");
         const randomDigit = digits[Math.floor(Math.random() * digits.length)];
         document.getElementById("result").innerText = `ヒント：せいかいのすうじにふくまれるのは ${randomDigit} だよ！`;
