@@ -64,7 +64,6 @@
   <script>
     let targetNumber = Math.floor(Math.random() * 100) + 1;
     let attempts = 0;
-    let lastInput = null; // 直前の数字を保持
 
     // localStorageからさいこうのきろくを取得
     let best = localStorage.getItem("best") || Infinity;
@@ -93,11 +92,9 @@
       attempts++;
 
       if (input < targetNumber) {
-        const ref = lastInput !== null ? lastInput : input;
-        document.getElementById("result").innerText = `${ref}よりおおきい`;
+        document.getElementById("result").innerText = `${input}よりおおきい`;
       } else if (input > targetNumber) {
-        const ref = lastInput !== null ? lastInput : input;
-        document.getElementById("result").innerText = `${ref}よりちいさい`;
+        document.getElementById("result").innerText = `${input}よりちいさい`;
       } else {
         document.getElementById("result").innerText = `せいかい！🎉 ${attempts}かいであてたよ`;
         // 正解したら入力欄とボタンを無効化
@@ -111,14 +108,12 @@
         }
       }
 
-      lastInput = input;
       inputEl.value = "";
     }
 
     function restart() {
       targetNumber = Math.floor(Math.random() * 100) + 1;
       attempts = 0;
-      lastInput = null;
       document.getElementById("result").innerText = "";
       const inputEl = document.getElementById("inputNumber");
       const submitBtn = document.getElementById("submitBtn");
